@@ -31,6 +31,7 @@ def numeric_column(df):
     return num_df
 
 
+@st.cache_data(persist="disk")
 def statements_DV():
     st.markdown("## ***Statements :***")
 
@@ -51,6 +52,7 @@ def statements_DV():
                 "because days are shorter during winter, people turn on lights earlier and turn them off later.")
 
 
+@st.cache_data(persist="disk")
 def statements_ADV():
     st.markdown("## ***Statements :***")
 
@@ -121,6 +123,7 @@ def advanced_datavisualisation():
     statements_ADV()
 
 
+@st.cache_data(persist="disk")
 def begin_function():
     banner_image(img_path)
     introduction()
@@ -133,7 +136,7 @@ def begin_function():
 @st.cache_data(persist="disk")
 def banner_image(image):
     try:
-        st.image(image, use_column_width=True, caption="Source : DALL-E 3", width=1000)
+        st.image(image, use_column_width=True, width=1000)
     except Exception as e:
         st.write(f"Une erreur s'est produite lors de l'affichage de l'image : {e}")
 
@@ -142,7 +145,7 @@ def banner_image(image):
 def introduction():
     st.markdown("# Data Visualisation Project")
     st.markdown("## Using Streamlit")
-    st.markdown("By : **FREIRE Matthieu DE1**")
+    st.markdown("By : **FREIRE Matthieu DE1 Master 1 Data Science EFREI Paris**")
     st.markdown("## ***Electricity and Gas consumption in Metropolitan France***")
     st.markdown("Link : [Government Data](https://www.data.gouv.fr/fr/datasets/consommation-quotidienne-brute/)")
     st.markdown("You can download it using the link above.")
@@ -355,10 +358,29 @@ def line_function(data, columns, year):
             st.write(f"Une erreur s'est produite : {e}")
 
 
+def conclusion():
+    st.markdown("## ***Conclusion :***")
+    st.markdown("The analysis of gas and electricity consumption patterns through the years reveals "
+                "distinct seasonal trends influenced by weather conditions and daylight hours. Gas consumption is "
+                "characterized by a general decline in higher consumption levels, suggesting increased efficiency or "
+                "regulatory measures. It peaks during the winter months when colder temperatures necessitate "
+                "increased heating.")
+
+    st.markdown("Electricity consumption, stable over the years, also experiences a surge during "
+                "winter due to the increased use of heaters and lighting amidst shorter days. Both energy sources "
+                "depict reduced usage at the onset and conclusion of winter, and electricity usage drops "
+                "significantly overnight.")
+
+    st.markdown("GRTgaz and Térega exhibit similar gas consumption trends. These insights "
+                "can inform energy management strategies, infrastructure planning, and consumer education to optimize "
+                "energy use and sustainability.")
+
+
 if __name__ == '__main__':
     print("Hello World!")
     # Every Path
     img_path = "../../data/imagedataviz.png"
+    conc_img = "../../data/LOGO_EFREI_WEB_bleu.png"
     data_path = (r"C:\Data\Projet CODE\Code Python\Data Visualisation\DataViz "
                  r"S7\Project\data\gouv_data\consommation-quotidienne-brute_clean.csv")
 
@@ -373,5 +395,9 @@ if __name__ == '__main__':
     advanced_datavisualisation()
     st.divider()
 
+    conclusion()
+    st.divider()
+
     st.markdown("## ***Thank you for your attention !***")
+    banner_image(conc_img)
     print("Goodbye World!")
