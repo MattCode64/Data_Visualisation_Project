@@ -31,6 +31,45 @@ def numeric_column(df):
     return num_df
 
 
+def statements_DV():
+    st.markdown("## ***Statements :***")
+
+    st.markdown("### ***Gas :***")
+    st.markdown("The distribution shows a general downward trend in gas consumption in the higher values over "
+                "the three years. This may indicate a reduction in extreme cases of gas consumption or better "
+                "regulation of high consumption levels.")
+    st.markdown("Overall, gas consumption appears to be seasonal, with variations from year to year.")
+    st.markdown("People gets colder during winter and hotter during summer, so they use more gas to heat their "
+                "homes during winter and less during summer.")
+
+    st.markdown("GRTgaz and Térega follow almost the same trend during years.")
+
+    st.markdown("### ***Electricity :***")
+    st.markdown("We can see that it is during winter that electricity has the highest values. We can guess that "
+                "because people turn on heaters for example.")
+    st.markdown("We can also see that it is during winter that electricity has the highest values. We can guess that "
+                "because days are shorter during winter, people turn on lights earlier and turn them off later.")
+
+
+def statements_ADV():
+    st.markdown("## ***Statements :***")
+
+    st.markdown("### ***Gas :***")
+    st.markdown("Thanks to time visualization, we can see that the months that begin and end the winter are those "
+                "that consume the least energy.")
+    st.markdown("The winter months, on the other hand, show a net increase in gas consumption due to the cold "
+                "temperatures and people warming their homes.")
+
+    st.markdown("### ***Electricity :***")
+    st.markdown("For electricity, we can see that the rates are almost identical for all years, with a slight "
+                "seasonal difference in consumption due to the longer days in summer and shorter days in winter.")
+
+    st.markdown("We can also see, thanks to the line chart per hour of the day, that during the night, "
+                "energy consumption drops drastically on average. This is explained by the fact that people sleep at "
+                "night and therefore turn off the lights. However, it rises again in the morning when people go to "
+                "work and in the evening when people go home.")
+
+
 def datavisualisation():
     st.markdown("## Data Visualisation :")
     # Variables
@@ -55,6 +94,9 @@ def datavisualisation():
     # Plot Matrix Correlation
     plot_matrix_correlation(num_df)
 
+    # Statements
+    statements_DV()
+
 
 def advanced_datavisualisation():
     st.markdown("## Advanced Data Visualisation :")
@@ -74,6 +116,9 @@ def advanced_datavisualisation():
 
     # Plot Heatmap
     line_function(dataframe, selected_multiple_columns, selected_year)
+
+    # Statements
+    statements_ADV()
 
 
 def begin_function():
@@ -113,7 +158,7 @@ def description():
     st.markdown("The data is provided by RTE, the French electricity transmission system operator.")
 
     st.markdown("**EDF is the intermediary between RTE and consumers (households)**")
-    st.markdown("**Téréga manages the gas transmission network in the southwest quarter of France, while GRTgaz "
+    st.markdown("**Térega manages the gas transmission network in the southwest quarter of France, while GRTgaz "
                 "manages the network in the rest of the country.**")
     st.markdown("**Their energy is then transported to homes by GRDF.**")
 
@@ -139,11 +184,14 @@ def display_data(data):
 def expander(data):
     with st.expander("Click here to see the explanation of the columns"):
         st.markdown("- date_time: the combined date and time, probably in a specific time zone (+01:00 indicates the "
-                    "time zone).\n- date: the specific date of data recording.\n- heure: the specific time the data was "
-                    "recorded.\n- consommation_brute_gaz_grtgaz: gas consumption by GRTgaz.\n- statut_grtgaz: the status "
+                    "time zone).\n- date: the specific date of data recording.\n- heure: the specific time the data was"
+                    "recorded.\n- consommation_brute_gaz_grtgaz: gas consumption by GRTgaz.\n- statut_grtgaz: the "
+                    "status"
                     "of the data provided by GRTgaz.\n- consommation_brute_gaz_terega: gas consumption by Teréga.\n- "
-                    "statut_terega: the status of the data provided by Teréga.\n- consommation_brute_gaz_totale: total gas "
-                    "consumption.\n- consommation_brute_electricite_rte: electricity consumption.\n- statut_rte: the status"
+                    "statut_terega: the status of the data provided by Teréga.\n- consommation_brute_gaz_totale: "
+                    "total gas"
+                    "consumption.\n- consommation_brute_electricite_rte: electricity consumption.\n- statut_rte: the "
+                    "status"
                     "of the electricity data provided.\n- consommation_brute_totale: total consumption of gas and "
                     "electricity.")
 
@@ -314,11 +362,9 @@ if __name__ == '__main__':
     data_path = (r"C:\Data\Projet CODE\Code Python\Data Visualisation\DataViz "
                  r"S7\Project\data\gouv_data\consommation-quotidienne-brute_clean.csv")
 
-    # Load data with streamlit function cache
     dataframe = load_data(data_path)
     dataframe['date_heure'] = pd.to_datetime(dataframe['date_heure'], utc=True)
 
-    # Beginning Functions
     begin_function()
     st.divider()
     datavisualisation()
