@@ -125,7 +125,6 @@ def advanced_datavisualisation():
 
 @st.cache_data(persist="disk")
 def begin_function():
-    banner_image(img_path)
     introduction()
     description()
     st.divider()
@@ -133,7 +132,7 @@ def begin_function():
     expander(dataframe)
 
 
-@st.cache_data(persist="disk")
+# @st.cache_data(persist="disk")
 def banner_image(image):
     try:
         st.image(image, use_column_width=True, width=1000)
@@ -387,6 +386,7 @@ if __name__ == '__main__':
     dataframe = load_data(data_path)
     dataframe['date_heure'] = pd.to_datetime(dataframe['date_heure'], utc=True)
 
+    banner_image(img_path)
     begin_function()
     st.divider()
     datavisualisation()
