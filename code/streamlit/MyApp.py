@@ -5,6 +5,30 @@ import plotly.express as px
 import plotly.graph_objs as go
 import seaborn as sns
 import streamlit as st
+import time
+from datetime import datetime
+
+
+# Décorateur pour enregistrer le temps d'exécution de la fonction principale de l'app
+def log_total_app_execution_time(file_name):
+    def decorator(main_func):
+        def wrapper(*args, **kwargs):
+            start_time = time.time()
+            result = main_func(*args, **kwargs)  # Exécution de la fonction principale de l'app
+            end_time = time.time()
+            total_time = end_time - start_time
+
+            # Écriture du temps total d'exécution dans un fichier
+            timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            with open(file_name, "a") as file:
+                file.write(
+                    f"{timestamp}: Le temps total d'exécution est de {round(total_time, 5)} secondes.\n")
+
+            return result
+
+        return wrapper
+
+    return decorator
 
 
 def select_year(df, key):
@@ -72,7 +96,7 @@ def statements_ADV():
                 "work and in the evening when people go home.")
 
 
-def datavisualisation():
+def datavisualisation(dataframe):
     st.markdown("## Data Visualisation :")
     # Variables
     year_selected = select_year(dataframe, "1")
@@ -100,7 +124,7 @@ def datavisualisation():
     statements_DV()
 
 
-def advanced_datavisualisation():
+def advanced_datavisualisation(dataframe):
     st.markdown("## Advanced Data Visualisation :")
 
     # Filter new dataframe with only numeric columns
@@ -117,14 +141,14 @@ def advanced_datavisualisation():
     plot_linechart(dataframe, selected_multiple_columns)
 
     # Plot Heatmap
-    line_function(dataframe, selected_multiple_columns, selected_year)
+    plot_heatmap(dataframe, selected_multiple_columns, selected_year)
 
     # Statements
     statements_ADV()
 
 
 @st.cache_data(persist="disk")
-def begin_function():
+def begin_function(dataframe):
     introduction()
     description()
     st.divider()
@@ -132,7 +156,7 @@ def begin_function():
     expander(dataframe)
 
 
-# @st.cache_data(persist="disk")
+@st.cache_data(persist="disk")
 def banner_image(image):
     try:
         st.image(image, use_column_width=True, width=1000)
@@ -254,15 +278,15 @@ def plot_matrix_correlation(df):
 # Function to plot every month of the year with a pie chart of selected column and year with plotly
 @st.cache_data(persist="disk")
 def plot_pie_chart(df, columns, year):
-    if not columns:
-        st.warning('No columns selected for plotting.')
-        return
-
     df_year = df[df['date_heure'].dt.year == year].copy()
     df_year['month'] = df_year['date_heure'].dt.month
     df_year['month'] = df_year['month'].apply(lambda x: calendar.month_abbr[x])
 
     with st.expander("Pie Charts :", expanded=True):
+        if not columns:
+            st.warning('No columns selected for plotting.')
+            return
+
         if len(columns) == 1:
             column = columns[0]
             fig = px.pie(df_year, values=column, names='month')
@@ -323,8 +347,12 @@ def plot_linechart(df, columns):
 
 
 @st.cache_data(persist="disk")
-def line_function(data, columns, year):
+def plot_heatmap(data, columns, year):
     with st.expander("Heatmap :"):
+        if not columns:
+            st.warning('No columns selected for plotting.')
+            return
+
         try:
             # Filter data by the selected year
             data = data[data['date_heure'].dt.year == year]
@@ -357,6 +385,7 @@ def line_function(data, columns, year):
             st.write(f"Une erreur s'est produite : {e}")
 
 
+@st.cache_data(persist="disk")
 def conclusion():
     st.markdown("## ***Conclusion :***")
     st.markdown("The analysis of gas and electricity consumption patterns through the years reveals "
@@ -375,7 +404,8 @@ def conclusion():
                 "energy use and sustainability.")
 
 
-if __name__ == '__main__':
+@log_total_app_execution_time("app_execution_log.txt")
+def main():
     print("Hello World!")
     # Every Path
     img_path = "../../data/imagedataviz.png"
@@ -387,12 +417,11 @@ if __name__ == '__main__':
     dataframe['date_heure'] = pd.to_datetime(dataframe['date_heure'], utc=True)
 
     banner_image(img_path)
-    begin_function()
+    begin_function(dataframe)
     st.divider()
-    datavisualisation()
+    datavisualisation(dataframe)
     st.divider()
-
-    advanced_datavisualisation()
+    advanced_datavisualisation(dataframe)
     st.divider()
 
     conclusion()
@@ -401,3 +430,46 @@ if __name__ == '__main__':
     st.markdown("## ***Thank you for your attention !***")
     banner_image(conc_img)
     print("Goodbye World!")
+
+
+# En vous basant sur les précédents travaux pratiques que vous avez effectués. Construire une application web
+# interactive utilisant la librairie streamlit et une ou deux librairies de dataviz (matplotlib, seaborn, altair,
+# bokeh et plotly).
+#
+# L'idée principale du projet est de choisir un jeu de données de data.gouv.fr et de construire une application web de
+# dataviz pour répondre à des questions utiles sur ce jeu de données, en donnant à vos utilisateurs des informations
+# utiles et la possibilité d'interagir avec les données.
+#
+# Le jeu de données que vous choisissez peut avoir un lien avec le thème de RSE, ce n'est pas obligatoire, mais
+# fortement recommandé. Voici le lien pour en savoir plus sur RSE :
+# https://www.economie.gouv.fr/entreprises/responsabilite-societale-entreprises-rse
+#
+# Directives techniques :
+# L'application streamlit doit respecter les **exigences techniques** suivantes (vous les organisez comme vous le
+# souhaitez, car le plus important est d'apporter des informations à vos utilisateurs) :
+#
+# - Tout le code doit être organisé en fonctions, si vous pouvez écrire des commentaires, c'est toujours mieux. Pensez à
+#     du code modulable, à des blocs de traitement de données, à des étapes de travail. Cela vous aidera à organiser
+#     votre code en fonctions modulaires.
+#
+# - 4 graphiques internes à streamlit : st.line, st.bar_chart, st.scatter_chart, st.map
+#
+# - 4 graphiques externes différents (histogrammes, diagrammes à barres, diagrammes de dispersion ou diagrammes
+#     circulaires) intégrés à votre application à partir de bibliothèques externes telles que matplotlib, seaborn,
+#     plotly ou Altair.
+#
+# - 4 éléments interactifs (case à cocher, curseur ....)
+#
+# - Utilisation du cache : cache pour le chargement et le pré-traitement des données
+# - - Optionnel : un décorateur qui enregistre dans un fichier l'intervalle de temps d'exécution en secondes
+#     (30 secondes, 2 secondes, 0.01 seconde, ...) et l'horodatage de l'appel ()
+# - - Facultatif : essayez d'organiser vos appels de fonctions dans une fonction principale afin d'avoir un flux de
+#     travail clair de votre application.
+#
+# Gardez à l'esprit que l'idée est de fournir des informations utiles et de dessiner une histoire à propos
+# de vos données. Vous devez donc prendre le temps d'explorer, de concevoir et d'organiser votre tableau de bord
+# en choisissant les questions auxquelles vous voulez répondre et les informations que vous voulez présenter.
+
+
+if __name__ == '__main__':
+    main()
